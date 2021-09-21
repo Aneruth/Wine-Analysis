@@ -10,13 +10,12 @@ from sklearn import metrics
 from plotly.offline import download_plotlyjs,init_notebook_mode,plot,iplot
 from sklearn.model_selection import train_test_split,GridSearchCV
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 
 cf.go_offline()
-%matplotlib inline
 
 
 # call the data set
@@ -38,22 +37,28 @@ df.describe()
 # Basic Pairplot using seaborn 
 plt.figure(figsize=(11,6))
 sns.pairplot(df,diag_kind='hist')
+plt.show()
 
 # Quality vs fixed acidity
 df.iplot(kind='bar',x='quality',y='fixed acidity')
+plt.show()
 
 # Quality vs volatile acidity
 df.iplot(kind='bar',x='quality',y='volatile acidity')
+plt.show()
 
 # Quality vs citric acid
 plt.figure(figsize=(11,8))
 sns.barplot(x = 'quality', y = 'citric acid', data = df)
+plt.show()
 
 #  quality vs residual sugar
 df.iplot(kind='bar',x='quality',y='residual sugar')
+plt.show()
 
 # quality vs sulphates
 df.iplot(kind='histogram',x='quality',y='sulphates')
+plt.show()
 
 #Dividing wine as good and bad by giving the limit for the quality
 bins = (2, 6.5, 8)
@@ -71,6 +76,16 @@ df['quality'].value_counts()
 # plotting the quality 
 plt.figure(figsize=(10,7))
 sns.countplot(df['quality'])
+plt.show()
+
+# To check correlation map
+cor = df.corr()
+
+# Plotting correlation map
+plt.figure(figsize=(15,8))
+plt.title('Confusion matrix of BCCD Dataset')
+sns.heatmap(cor, annot = True)
+plt.show()
 
 ###########################################################################################################################################
 ########################################################## Processing the models ##########################################################
@@ -92,7 +107,7 @@ lr = LinearRegression()
 # fit the data
 lr.fit(X_train,y_train)
 
-# createing a new DataFrame with respect to Coefficient
+# creating a new DataFrame with respect to Coefficient
 lr_coeff = pd.DataFrame(lr.coef_,X.columns,columns=['Coefficient'])
 print('The coefficient of the data is:' + '\n\n',lr_coeff)
 
@@ -146,6 +161,24 @@ print('\n')
 
 # To print the classification report 
 print('The classification report is: ' + '\n \n',classification_report(y_test,predicti))
+
+# Hyperparameter tuning out model --> this is done by selecting a specific parameter to fetch the optimised result
+hyperList = [i for i in range(100,510,10)]
+hyperOutput = []
+for val in hyperList:
+    rfHyper = RandomForestClassifier(n_estimators=200)
+    rfHyper.fit(X_train,y_train)
+    predictHyper = rf.predict(X_test)
+    print(f'Accuracy score at {val}th estimator is {round(accuracy_score(y_test,predictHyper)*100,2)}')
+    hyperOutput.append(round(accuracy_score(y_test,predictHyper)*100,2))
+
+# Plotting the hyper parameter values
+mapList = [i for i in range(100,510,10)]
+plt.figure(figsize=(15,8))
+plt.title('Hperparameter graph for Ranndom Forest')
+plt.xlabel('Number of estimators')
+plt.ylabel('Accuracy Score')
+plt.plot(mapList,hyperOutput,marker='o')
 
 ######################################################## Support Vector Machine ########################################################
 
@@ -202,3 +235,10 @@ print('\n')
 
 # To print the classification report
 print('The classification report is:' + '\n \n',classification_report(y_test,grid_predict))
+
+# Result anlysis
+plt.figure(figsize=(16,8))
+plt.title('Graph to compare accuracy score for BCCD dataset')
+plt.xlabel('Algorithms')
+plt.ylabel('Accuracy Score')
+plt.bar(['Random Forest','Support Vector machine'],[round(accuracy_score(y_test,predicti)*100,2),round(accuracy_score(y_test,grid_predict)*100,2)])
