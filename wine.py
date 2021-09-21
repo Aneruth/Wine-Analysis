@@ -1,21 +1,23 @@
+'''
+The main of this project is to find the quality of the wine.
+This is done using various classification algorithm.
+'''
+
 # Importing all the packages required
 
 import pandas as pd 
 import seaborn as sns 
 import numpy as np
-import matplotlib.pyplot as plt 
-import cufflinks as cf 
+import matplotlib.pyplot as plt
 
 from sklearn import metrics
 from plotly.offline import download_plotlyjs,init_notebook_mode,plot,iplot
-from sklearn.model_selection import train_test_split,GridSearchCV
+from sklearn.model_selection import train_test_split,GridSearchCV,cross_val_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
-
-cf.go_offline()
 
 
 # call the data set
@@ -40,11 +42,11 @@ sns.pairplot(df,diag_kind='hist')
 plt.show()
 
 # Quality vs fixed acidity
-df.iplot(kind='bar',x='quality',y='fixed acidity')
+sns.barplot(data=df,x='quality',y='fixed acidity')
 plt.show()
 
 # Quality vs volatile acidity
-df.iplot(kind='bar',x='quality',y='volatile acidity')
+sns.barplot(data=df,x='quality',y='volatile acidity')
 plt.show()
 
 # Quality vs citric acid
@@ -53,14 +55,15 @@ sns.barplot(x = 'quality', y = 'citric acid', data = df)
 plt.show()
 
 #  quality vs residual sugar
-df.iplot(kind='bar',x='quality',y='residual sugar')
+sns.barplot(data=df,x='quality',y='residual sugar')
 plt.show()
 
 # quality vs sulphates
-df.iplot(kind='histogram',x='quality',y='sulphates')
+sns.barplot(data=df,x='quality',y='sulphates')
 plt.show()
 
-#Dividing wine as good and bad by giving the limit for the quality
+# Making a binary classification system for the response variable. 
+#Dividing wine into excellent and terrible categories by setting a quality limit.
 bins = (2, 6.5, 8)
 group_names = ['bad', 'good']
 df['quality'] = pd.cut(df['quality'], bins = bins, labels = group_names)
@@ -71,7 +74,8 @@ lq = LabelEncoder()
 df['quality'] = lq.fit_transform(df['quality'])
 
 # counting the values 
-df['quality'].value_counts()
+# To check the qulity count range between two classification
+print(df['quality'].value_counts())
 
 # plotting the quality 
 plt.figure(figsize=(10,7))
@@ -180,6 +184,10 @@ plt.xlabel('Number of estimators')
 plt.ylabel('Accuracy Score')
 plt.plot(mapList,hyperOutput,marker='o')
 
+# Cross Validation for Random Forest
+rfc_eval = cross_val_score(estimator = rf, X = X_train, y = y_train, cv = 10)
+rfc_eval.mean()
+
 ######################################################## Support Vector Machine ########################################################
 
 # Intialisng the SVM 
@@ -203,6 +211,12 @@ print('\n')
 # To print the classification report 
 print('The classification report is: ' + '\n \n',classification_report(y_test,predictio))
 
+'''
+Performing grid search which is a type of cross validation for Support Vector Machine
+C is a hypermeter which is set before the training model and used to control error.
+Gamma is also a hypermeter which is set before the training model and used to give curvature weight of the decision boundary.
+More gamma more the curvature and less gamma less curvature.
+'''
 # Initialise the gird search variable 
 pg = {"C":[0.1,1,10,100,1000],"gamma":[1,.1,.01,.001,.0001]}
 
