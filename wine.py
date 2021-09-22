@@ -23,13 +23,13 @@ from sklearn.svm import SVC
 df = pd.read_csv('/Users/aneruthmohanasundaram/Desktop/New Project/wine.csv')
 
 # To Print the head of the dataset (first ten values)
-df.head(10)
+print(df.head(10))
 
 # getting the info of the dataset 
-df.info()
+print(f'\n{df.info()}')
 
 # describing the dataset 
-df.describe()
+print(f'\n{df.describe()}')
 
 ###########################################################################################################################################
 ########################################################## Visualising the data ###########################################################
