@@ -11,7 +11,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn import metrics
-from plotly.offline import download_plotlyjs,init_notebook_mode,plot,iplot
 from sklearn.model_selection import train_test_split,GridSearchCV,cross_val_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report,confusion_matrix,accuracy_score
