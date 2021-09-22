@@ -220,6 +220,10 @@ More gamma more the curvature and less gamma less curvature.
 pg = {"C":[0.1,1,10,100,1000],"gamma":[1,.1,.01,.001,.0001]}
 
 # feed the search variable to the grid search 
+'''
+verbose --> get the quality of the data more the verbose more the quality
+scoring --> a parameter where we define what we need to infer from the dataset
+'''
 grid = GridSearchCV(SVC(),pg,verbose=3,scoring='accuracy')
 
 # Grid Search fixable
